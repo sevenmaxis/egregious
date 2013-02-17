@@ -46,11 +46,13 @@ REQUIRES:
 
 USAGE:
 1) Add to your Gemfile:
-gem 'egregious'
+    
+    gem 'egregious'
 
 2) In your ApplicationController add:
+```ruby
 include Egregious
-
+```
 Optionally, to configure create an initializer and add:
 
 Egregious.exception_codes.merge!({NameError => :bad_request})
@@ -68,11 +70,14 @@ or define your own exceptions. You can find a list in the Rack::Utils::HTTP_STAT
 If you want to change the behavior then you can override the following methods in your ApplicationController.
 
 # override this if you want your flash to behave differently
+```ruby
 def egregious_flash(exception)
     flash.now[:alert] = exception.message
 end
+```
 
 # override this if you want your logging to behave differently
+```ruby
 def egregious_log(exception)
     logger.fatal(
         "\n\n" + exception.class.to_s + ' (' + exception.message.to_s + '):\n    ' +
@@ -80,8 +85,10 @@ def egregious_log(exception)
             "\n\n")
     HoptoadNotifier.notify(exception) if defined?(HoptoadNotifier)
 end
+```
 
 # override this if you want to change your respond_to behavior
+```ruby
 def egregious_respond_to(exception)
     respond_to do |format|
           status = status_code_for_exception(exception)
@@ -92,11 +99,14 @@ def egregious_respond_to(exception)
                                           build_html_file_path(status) : build_html_file_path('500')}
     end
 end
+```
 
 # override this if you want to change what html static file gets returned.
+```ruby
 def build_html_file_path(status)
     File.expand_path(Rails.root, 'public', status + '.html')
 end
+```
 
 KNOWN ISSUES:
 * If you use CanCan or Devise you must have Egregious after CanCan/Devise in your Gemfile, if not it will not handle those errors correctly.
